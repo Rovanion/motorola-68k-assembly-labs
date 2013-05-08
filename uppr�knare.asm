@@ -15,6 +15,8 @@ RESET	CLR.L D0
 	CLR.B $10086		; Set PIA to config mode.
 	MOVE.B #%00000011,$10082
 	MOVE.B #$05,$10086	; Set PIAB to output mode and enable CRB.
+	AND.W #%1111100011111111,SR ; Turn on interrupts
+	MOVE.L #KLOCKINTERUPT,$68 ; Run this function on interrupt at CRB.
 ;;; Define a bunch of constants.
 SJUSTEG	DC.b $3F 		; '0'
 	DC.B $06		; '1'
@@ -28,18 +30,19 @@ SJUSTEG	DC.b $3F 		; '0'
 	DC.B $64		; '9'
 	;; D0-3 holds the value of the time.
 	;; D4 is the counter which keeps track of which 7-segment display we are on.
-IDLE	MOVE.L D0,$10080
+IDLE	MOVE.B #%00,10082
+	MOVE.B D0,$10080
 	MOVE.B #%01,10082
-	MOVE.L D1,$10080
+	MOVE.B D1,$10080
 	MOVE.B #%10,10082	
-	MOVE.L D2,$10080
+	MOVE.B D2,$10080
 	MOVE.B #%11,10082
-	MOVE.L D3,$10080
-	MOVE.B #%00,10082
+	MOVE.B D3,$10080
 	JMP IDLE
 
 ;;; Function called when the clock interrupts the processor
-KLOCKINTERRUPT	
+KLOCKINTERUPT
+	TST.B $10082		; Reset the interrupt bit
 	BSR ENSEKUND
 	RTE
 ENSEKUND
@@ -73,24 +76,5 @@ NOLLATIOMINUT
 	;; TODO: Fånga upp avbrotten
 	;; TODO: Avkoda den decadecimala siffran i registren och skriv rätt konstant till PIA.
 	
-LASKNAPP
-	MOVE.B $10080,D0
-	AND.B #$1,D0
-	BEQ LASKNAPP
-	MOVE.B D1,$10082
-	MOVE.L #2000,D2
-WAIT	SUB.L #1,D2
-	BNE WAIT
-	ADD.B #1,D1
-	CMP.B #10,D1
-	BEQ START
-	BRA LASKNAPP
 
-	
-	;; För att sätta eller nollställa enstaka bitar i pia
-	BSET #0,$10082 		; 1-sätter PIAB bit 0
-	BCLR #1,$10082		; 0-ställ PIAB bit 7
-
-	;; Kolla av enstaka bitar
-	BTST #3,$10080 		; Sätter z-laggan enligt resultat.
 	
