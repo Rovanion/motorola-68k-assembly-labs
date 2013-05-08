@@ -72,14 +72,24 @@ MUXINTERRUPT
 
 ;;; Define a bunch of constants.
 SJUSTEG	DC.B $3F 		; '0'
+	DC.B $00
 	DC.B $06		; '1'
+	DC.B $00
 	DC.B $5B		; '2'
+	DC.B $00
 	DC.B $84		; '3'
+	DC.B $00
 	DC.B $66		; '4'
+	DC.B $00
 	DC.B $6D		; '5'
+	DC.B $00
 	DC.B $7D		; '6'
+	DC.B $00
 	DC.B $07		; '7'
+	DC.B $00
 	DC.B $7F		; '8'
+	DC.B $00
 	DC.B $64		; '9'
+	DC.B $00
 
 	
